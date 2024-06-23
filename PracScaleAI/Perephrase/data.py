@@ -5,7 +5,7 @@ from tensorflow.keras.layers import Input, LSTM, Dense, Embedding, Bidirectional
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-# Примеры текстов (добавлено больше примеров)
+# Примеры текстов
 original_texts = [
     "Пример первого текста",
     "Пример второго текста",
@@ -35,13 +35,11 @@ paraphrased_texts = [
     "Перефразированный текст для обучения нейросети",
     "Пример использования нейросети для перефразирования текста"
 ]
-# Токенизация и создание последовательностей
+# Токенизация
 tokenizer = Tokenizer()
 tokenizer.fit_on_texts(original_texts + paraphrased_texts)
 sequences_original = tokenizer.texts_to_sequences(original_texts)
 sequences_paraphrased = tokenizer.texts_to_sequences(paraphrased_texts)
-
-# Паддинг последовательностей
 max_sequence_len = max(max(len(x) for x in sequences_original), max(len(x) for x in sequences_paraphrased))
 padded_original = pad_sequences(sequences_original, maxlen=max_sequence_len, padding='post')
 padded_paraphrased = pad_sequences(sequences_paraphrased, maxlen=max_sequence_len, padding='post')
@@ -53,7 +51,7 @@ vocab_size = len(tokenizer.word_index) + 1
 embedding_dim = 256
 lstm_units = 128
 
-# Архитектура Seq2Seq модели
+# Архитектура модели
 input_seq = Input(shape=(max_sequence_len,))
 embedded_seq = Embedding(vocab_size, embedding_dim)(input_seq)
 encoder = Bidirectional(LSTM(lstm_units, return_sequences=True))(embedded_seq)
@@ -76,11 +74,11 @@ def paraphrase(text):
         return "Токены не найдены для входного текста."
     
     padded = pad_sequences(sequence, maxlen=max_sequence_len, padding='post')
-    print(f"Padded sequence: {padded}")  # Отладочный вывод
+    print(f"Padded sequence: {padded}") 
     prediction = model.predict(padded)
-    print(f"Prediction: {prediction}")  # Отладочный вывод
-    predicted_sequence = np.argmax(prediction, axis=-1)[0]  # Получаем одномерный массив
-    print(f"Predicted sequence: {predicted_sequence}")  # Отладочный вывод
+    print(f"Prediction: {prediction}") 
+    predicted_sequence = np.argmax(prediction, axis=-1)[0]
+    print(f"Predicted sequence: {predicted_sequence}")
     paraphrased_text = tokenizer.sequences_to_texts([predicted_sequence])[0]
     return paraphrased_text
 
